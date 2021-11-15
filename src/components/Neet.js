@@ -190,6 +190,14 @@ let data = {
 
 
 export default function Neet() {
+
+
+    data.questions = data.questions.map(item =>({
+     ...item,
+     isVisible:false
+    }))
+    data.questions[0].isVisible=true;
+   
     const theme = useTheme();
     const classes = useStyle()
 
@@ -202,7 +210,7 @@ export default function Neet() {
     const [status, setStatus] = useState("");
 
 
-
+    console.log('ds',question)
 
     const Alert = React.forwardRef(function Alert(props, ref) {
         return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -212,20 +220,28 @@ export default function Neet() {
     const handleSaveNext = () => {
         const nextQuestion = index + 1;
 
-        if (answer !== "") {
-            if (nextQuestion < question.questions.length) {
-                setIndex(nextQuestion);
-                setCurrentQ(question[nextQuestion]);
-            } else {
-                setMessage("No Question Available")
-                setOpen(true);
-                setStatus("warning")
-            }
-        } else {
-            setMessage("Please select option")
-            setOpen(true);
-            setStatus("warning")
-        }
+
+        question.questions = question.questions.map((item, index)=>(
+            console.log(index,'h', nextQuestion),
+            nextQuestion===index ? {isVisible:true}:{...item, isVisible:false}
+        ))
+        console.log('save', question)
+        setQuestion(question)
+
+        // if (answer !== "") {
+        //     if (nextQuestion < question.questions.length) {
+        //        // setIndex(nextQuestion);
+        //         //setCurrentQ(question[nextQuestion]);
+        //     } else {
+        //         setMessage("No Question Available")
+        //         setOpen(true);
+        //         setStatus("warning")
+        //     }
+        // } else {
+        //     setMessage("Please select option")
+        //     setOpen(true);
+        //     setStatus("warning")
+        // }
 
     };
 
@@ -260,6 +276,10 @@ export default function Neet() {
     console.log(question)
 
 
+    const handleChange = (e, i) => {
+        console.log(e.target.checked)
+        console.log(i)
+    }
 
 
 
@@ -291,31 +311,37 @@ export default function Neet() {
                                 overflowY: "scroll",
                                 padding: "1.5em"
                             }}>
-                            <ul style={{
-                                listStyle: "none",
-                                padding: "0"
-                            }}>
-                                <li key={question.questions[index]}>
-                                    <strong>{question.questions[index].question}</strong>
-                                </li>
-                            </ul>
-                            <Grid style={{ paddingBottom: "1.5em" }} >
-                                <FormControl component="fieldset">
-                                    <RadioGroup row aria-label="answer" name="row-radio-buttons-group">
-                                        {question.questions[index].answers.map((item, dx) => (
-                                            <FormControlLabel
-                                                key={`radio-${dx}`}
-                                                value={item}
-                                                control={<Radio />}
-                                                label={item}
-                                                checked={answer == item}
-                                                onChange={(e) => setAnswer(e.target.value)}
-                                            />
-                                        ))}
+                            {
+                                question.questions.map((item, index) => (
+                                   
+                                    <>
+                                        <ul>
+                                            <li>{item.question}</li>
+                                        </ul>
 
-                                    </RadioGroup>
-                                </FormControl>
-                            </Grid>
+                                        {item.answers.map((itm,dx) => (
+                                            <Grid style={{ paddingBottom: "1.5em" }} >
+                                                <FormControl component="fieldset">
+                                                    <RadioGroup row aria-label="answer" name="row-radio-buttons-group">
+
+                                                        <FormControlLabel
+                                                            key={`radio-${dx}`}
+                                                            value={itm}
+                                                            control={<Radio />}
+                                                            label={itm}
+                                                            checked={item.isChecked}
+                                                            onChange={(e) => handleChange(e, dx)}
+                                                        />
+         
+
+                                                    </RadioGroup>
+                                                </FormControl>
+                                            </Grid>
+                                        ))}
+                                    </>
+                                ))
+                            }
+
                         </Grid>
                         <Grid container justifyContent="space-around"
                             style={{
