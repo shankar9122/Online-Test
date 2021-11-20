@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Box,
     Button, CssBaseline, Grid, makeStyles, Paper, Snackbar, styled, Table,
@@ -187,11 +187,12 @@ let data = {
         }
     ]
 }
-
-
+let selectdAnswer = []
 export default function Neet() {
     const theme = useTheme();
     const classes = useStyle()
+
+
 
     const [question, setQuestion] = useState(data);
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -210,7 +211,8 @@ export default function Neet() {
 
     data.questions = data.questions.map(item => ({
         ...item,
-        isVisible: false
+        isVisible: false,
+        selectedAnswer: '',
     }))
     data.questions[currentQuestion].isVisible = true
 
@@ -218,9 +220,11 @@ export default function Neet() {
     const handleSaveNext = () => {
         const nextQuestion = currentQuestion + 1;
 
-        if (iSelectedAnswer !== "") {
+        console.log("yu", selectdAnswer[currentQuestion])
+        
+        if (selectdAnswer !== "") {
             if (nextQuestion < question.questions.length) {
-                setCurrentQuestion(nextQuestion);
+                setCurrentQuestion(()=>nextQuestion);
             } else {
                 setMessage("No Question Available")
                 setOpen(true);
@@ -233,39 +237,83 @@ export default function Neet() {
         }
 
         console.log("set", question)
-
+        handleShowData()
     };
 
+    const handleShowData = () => {
+        let ds = { ...question }
+        ds.questions = ds.questions.map((item, idx) => (
+         {
+            ...item,
+            isVisible:  idx ===currentQuestion ? true : false
+        }))
+        //ds.questions[currentQuestion].isVisible = true;
+        setQuestion(ds)
+    }
     const handleNext = () => {
-        const nextQuestion = currentQuestion + 1;
-        if (nextQuestion < question.questions.length) {
-            setCurrentQuestion(nextQuestion);
+        console.log(currentQuestion)
+        let next = currentQuestion + 1;
+        
+        
+        if ((currentQuestion + 1) < question.questions.length) {
+            setCurrentQuestion(next);
+            
         } else {
             setMessage("No Question Available")
             setOpen(true);
             setStatus("warning")
         }
+        //setCurrentQuestion(nextQuestion);
+        handleShowData()
+        console.log("yu", currentQuestion)
     }
 
     const handlePrev = () => {
+        
         const prevQueston = currentQuestion - 1;
+        console.log("yu", currentQuestion)
         if (prevQueston <= question.questions.length && prevQueston >= 0) {
-            setCurrentQuestion(prevQueston);
+            setCurrentQuestion(()=>prevQueston);
 
         } else {
             setMessage("Click Next")
             setOpen(true);
             setStatus("warning")
         }
+        handleShowData()
     };
 
     const handleSubmit = () => {
         console.log(iSelectedAnswer)
     };
 
-    // console.log(question)
+
+    useEffect(() => {
+    }, [])
 
 
+
+    const handleChange = (e, idx, q) => {
+        let ds = { ...question }
+        ds.questions = ds.questions.map(item => (
+
+            item.question == q ?
+                {
+                    ...item,
+                    selectedAnswer: e.target.value,
+                } : item))
+
+        setQuestion(ds)
+        // selectdAnswer.push({
+        //     question:q,
+        //     answer:e.target.value,
+        //     answerIndex:idx
+
+        // })
+
+
+        console.log(ds)
+    }
 
 
 
@@ -297,37 +345,36 @@ export default function Neet() {
                                 overflowY: "scroll",
                                 padding: "1.5em"
                             }}>
-
-
-
-                            {/* item.isVisible == true && */}
                             <ul style={{
                                 listStyle: "none",
                                 padding: "0"
                             }}>
                                 {question.questions.map((item, index) => (
+                                    item.isVisible == true &&
                                     <li>
                                         <Typography varient="h6">{item.question}</Typography>
                                         <Grid style={{ paddingBottom: "1.5em" }} >
                                             <FormControl component="fieldset">
                                                 <RadioGroup
-                                                    row aria-label="answer"
-                                                    name="answers"
-                                                    value={iSelectedAnswer}
-                                                    onChange={(e) => setISelectedAnswer(e.target.value)}
+
+                                                    name={"answer_" + index}
+                                                    key={`radio-${index}`}
+
                                                 >
-                                                    {item.answers.map((item, idx) => (
+                                                    {item.answers.map((el, idx) => (
                                                         <FormControlLabel
+                                                            onChange={(e) => handleChange(e, idx, item.question)}
                                                             key={`radio-${idx}`}
-                                                            value={item}
-                                                            control={<Radio color="primary" />}
-                                                            label={item}
-                                                            name="answer"
-                                                        // checked={answers[idx] == item}
+                                                            value={el}
+                                                            control={<Radio color="primary" size="small" />}
+                                                            label={el}
+                                                            name={"answer_" + index}
+                                                            checked={item.selectedAnswer == el}
                                                         />
                                                     ))}
                                                 </RadioGroup>
                                             </FormControl>
+
                                         </Grid>
                                     </li>
                                 ))}
