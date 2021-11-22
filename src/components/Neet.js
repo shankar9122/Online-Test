@@ -187,7 +187,6 @@ let data = {
         }
     ]
 }
-let selectdAnswer = []
 export default function Neet() {
     const theme = useTheme();
     const classes = useStyle()
@@ -197,8 +196,6 @@ export default function Neet() {
     const [question, setQuestion] = useState(data);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [open, setOpen] = useState(false);
-    const [iSelectedAnswer, setISelectedAnswer] = useState("");
-    const [answers, setAnswers] = useState([]);
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("");
 
@@ -211,20 +208,31 @@ export default function Neet() {
 
     data.questions = data.questions.map(item => ({
         ...item,
-        isVisible: false,
         selectedAnswer: '',
     }))
-    data.questions[currentQuestion].isVisible = true
+
+
+    // useEffect(() => {
+    //     setCurrentQuestion(currentQuestion)
+    // }, [currentQuestion])
+    // const handleShowData = () => {
+    //     let ds = { ...question }
+    //     ds.questions = ds.questions.map((item, idx) => (
+    //         {
+    //             ...item,
+    //             isVisible: idx == currentQuestion ? true : false
+    //         }))
+    //     setQuestion(ds)
+    // };
 
 
     const handleSaveNext = () => {
-        const nextQuestion = currentQuestion + 1;
+        let nextQuestion = currentQuestion + 1;
 
-        console.log("yu", selectdAnswer[currentQuestion])
-        
-        if (selectdAnswer !== "") {
+        if (question.questions[currentQuestion].selectedAnswer !== "") {
             if (nextQuestion < question.questions.length) {
-                setCurrentQuestion(()=>nextQuestion);
+                setCurrentQuestion(currentQuestion + 1);
+                console.log("yu", currentQuestion)
             } else {
                 setMessage("No Question Available")
                 setOpen(true);
@@ -237,66 +245,56 @@ export default function Neet() {
         }
 
         console.log("set", question)
-        handleShowData()
+        // handleShowData()
     };
 
-    const handleShowData = () => {
-        let ds = { ...question }
-        ds.questions = ds.questions.map((item, idx) => (
-         {
-            ...item,
-            isVisible:  idx ===currentQuestion ? true : false
-        }))
-        //ds.questions[currentQuestion].isVisible = true;
-        setQuestion(ds)
-    }
+
+
+
+
     const handleNext = () => {
         console.log(currentQuestion)
         let next = currentQuestion + 1;
-        
-        
+
+
         if ((currentQuestion + 1) < question.questions.length) {
             setCurrentQuestion(next);
-            
+
         } else {
             setMessage("No Question Available")
             setOpen(true);
             setStatus("warning")
         }
         //setCurrentQuestion(nextQuestion);
-        handleShowData()
+        // handleShowData()
         console.log("yu", currentQuestion)
     }
 
     const handlePrev = () => {
-        
+
         const prevQueston = currentQuestion - 1;
         console.log("yu", currentQuestion)
         if (prevQueston <= question.questions.length && prevQueston >= 0) {
-            setCurrentQuestion(()=>prevQueston);
+            setCurrentQuestion(() => prevQueston);
 
         } else {
             setMessage("Click Next")
             setOpen(true);
             setStatus("warning")
         }
-        handleShowData()
+        // handleShowData()
     };
 
     const handleSubmit = () => {
-        console.log(iSelectedAnswer)
+        console.log(question)
     };
 
-
-    useEffect(() => {
-    }, [])
 
 
 
     const handleChange = (e, idx, q) => {
         let ds = { ...question }
         ds.questions = ds.questions.map(item => (
-
             item.question == q ?
                 {
                     ...item,
@@ -304,15 +302,15 @@ export default function Neet() {
                 } : item))
 
         setQuestion(ds)
-        // selectdAnswer.push({
-        //     question:q,
-        //     answer:e.target.value,
-        //     answerIndex:idx
+    };
 
-        // })
-
-
-        console.log(ds)
+    const handleClear = () => {
+        let ds = { ...question }
+        ds.questions = ds.questions.map((item, idx) => ({
+            ...item,
+            selectedAnswer: idx == currentQuestion ? "" : item.selectedAnswer
+        }))
+        setQuestion(ds)
     }
 
 
@@ -345,7 +343,7 @@ export default function Neet() {
                                 overflowY: "scroll",
                                 padding: "1.5em"
                             }}>
-                            <ul style={{
+                            {/* <ul style={{
                                 listStyle: "none",
                                 padding: "0"
                             }}>
@@ -356,10 +354,8 @@ export default function Neet() {
                                         <Grid style={{ paddingBottom: "1.5em" }} >
                                             <FormControl component="fieldset">
                                                 <RadioGroup
-
                                                     name={"answer_" + index}
                                                     key={`radio-${index}`}
-
                                                 >
                                                     {item.answers.map((el, idx) => (
                                                         <FormControlLabel
@@ -378,32 +374,33 @@ export default function Neet() {
                                         </Grid>
                                     </li>
                                 ))}
-                            </ul>
-                            {/* <ul style={{
+                            </ul> */}
+                            <ul style={{
                                 listStyle: "none",
                                 padding: "0"
                             }}>
                                 <li key={question.questions[currentQuestion]}>
-                                    <strong>{question.questions[currentQuestion].question}</strong>
+                                    <Typography variant="subtitle1">{question.questions[currentQuestion].question}</Typography>
+                                    <Grid style={{ paddingBottom: "1.5em" }} >
+                                        <FormControl component="fieldset">
+                                            <RadioGroup row aria-label="answer" name="row-radio-buttons-group">
+                                                {question.questions[currentQuestion].answers.map((el, idx) => (
+                                                    <FormControlLabel
+                                                        onChange={(e) => handleChange(e, idx, question.questions[currentQuestion].question)}
+                                                        key={`radio-${idx}`}
+                                                        value={el}
+                                                        control={<Radio color="primary" size="small" />}
+                                                        label={el}
+                                                        name={"answer_" + idx}
+                                                        checked={question.questions[currentQuestion].selectedAnswer == el}
+                                                    />
+                                                ))}
+                                            </RadioGroup>
+                                        </FormControl>
+                                    </Grid>
                                 </li>
                             </ul>
-                            <Grid style={{ paddingBottom: "1.5em" }} >
-                                <FormControl component="fieldset">
-                                    <RadioGroup row aria-label="answer" name="row-radio-buttons-group">
-                                        {question.questions[currentQuestion].answers.map((item, idx) => (
-                                            <FormControlLabel
-                                                key={`radio-${idx}`}
-                                                value={item}
-                                                control={<Radio />}
-                                                label={item}
-                                                name="answer"
-                                                // checked={iSelectedAnswer[idx] == item}
-                                                onChange={(e) => setISelectedAnswer(e.target.value)}
-                                            />
-                                        ))}
-                                    </RadioGroup>
-                                </FormControl>
-                            </Grid> */}
+
                         </Grid>
                         <Grid container justifyContent="space-around"
                             style={{
@@ -420,19 +417,25 @@ export default function Neet() {
                             >
                                 Save & Next
                             </Button>
-                            <Button variant="outlined" onClick={() => setISelectedAnswer()}>Clear</Button>
+                            <Button variant="outlined"
+                                onClick={handleClear}
+                            >Clear</Button>
                             <Button variant="contained"
                                 style={{
                                     background: theme.palette.warning.main,
                                     color: "#fff",
-                                }}>
+                                }}
+                                onClick={handleSaveNext}
+                            >
                                 Save & Mark For Review
                             </Button>
                             <Button variant="contained"
                                 style={{
                                     background: theme.palette.primary.main,
                                     color: "#fff",
-                                }}>
+                                }}
+                                onClick={handleNext}
+                            >
                                 Mark For Review & Next
                             </Button>
                         </Grid>
