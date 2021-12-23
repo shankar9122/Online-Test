@@ -198,6 +198,8 @@ export default function Neet() {
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState("");
     const [status, setStatus] = useState("");
+    const [saveMark, setSaveMark] = useState(0);
+    const [optionSave, setOptionSave] = useState(false);
 
 
 
@@ -232,7 +234,8 @@ export default function Neet() {
         if (question.questions[currentQuestion].selectedAnswer !== "") {
             if (nextQuestion < question.questions.length) {
                 setCurrentQuestion(currentQuestion + 1);
-                console.log("yu", currentQuestion)
+                setOptionSave(true);
+                console.log("sas", optionSave)
             } else {
                 setMessage("No Question Available")
                 setOpen(true);
@@ -247,6 +250,27 @@ export default function Neet() {
         console.log("set", question)
         // handleShowData()
     };
+
+
+    const handleSaveMark = () => {
+        let nextQuestion = currentQuestion + 1;
+
+        if (question.questions[currentQuestion].selectedAnswer !== "") {
+            if (nextQuestion < question.questions.length) {
+                setCurrentQuestion(currentQuestion + 1);
+                setSaveMark(nextQuestion)
+            } else {
+                setMessage("No Question Available")
+                setOpen(true);
+                setStatus("warning")
+            }
+        } else {
+            setMessage("Please select option")
+            setOpen(true);
+            setStatus("warning")
+        }
+    };
+
 
 
 
@@ -302,6 +326,7 @@ export default function Neet() {
                 } : item))
 
         setQuestion(ds)
+        console.log("sas", optionSave)
     };
 
     const handleClear = () => {
@@ -425,7 +450,7 @@ export default function Neet() {
                                     background: theme.palette.warning.main,
                                     color: "#fff",
                                 }}
-                                onClick={handleSaveNext}
+                                onClick={handleSaveMark}
                             >
                                 Save & Mark For Review
                             </Button>
@@ -510,7 +535,7 @@ export default function Neet() {
                                                 background: "#683dac",
                                                 borderRadius: "50%"
                                             }}
-                                        >0</span>
+                                        >{saveMark}</span>
                                     </TableCell>
                                     <TableCell colSpan={3}>Answered & Marked for Review (will be considered for evaluation)</TableCell>
                                 </TableRow>
@@ -522,7 +547,10 @@ export default function Neet() {
                                 {question.questions.map((item, idx) => (
                                     <li key={idx + 1}
                                         style={{
-                                            cursor: "pointer"
+                                            cursor: "pointer",
+                                            backgroundColor: optionSave == true &&
+                                            question.questions[idx].selectedAnswer != "" ?  
+                                            theme.palette.success.main : "#e3e3e3"
                                         }}
                                         onClick={() => setCurrentQuestion(idx)}>{idx + 1}
                                     </li>
