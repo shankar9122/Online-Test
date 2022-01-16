@@ -1,10 +1,16 @@
-import './App.css';
-import Neet from "./components/Neet"
+import { ThemeProvider } from '@material-ui/core'
+import React from 'react'
+import Test from './components/Test'
+import { Theme } from './components/Theme'
 
-function App() {
+const App = () => {
   return (
-    <Neet />
-  );
+    <>
+      <ThemeProvider theme={Theme}>
+        <Test />
+      </ThemeProvider>
+    </>
+  )
 }
 
-export default App;
+export default App

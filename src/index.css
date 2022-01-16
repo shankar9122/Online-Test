@@ -1,13 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* scrollbar-width: none; */
+  background-position: sticky;
 }
 
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  -ms-overflow-style: none; /* IE 11 */
+  scrollbar-width: none;
+}
+
+
+::-webkit-scrollbar {
+  width: 0px;
+  display: transparent; /* make scrollbar transparent */
+}
+
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.rbc-overlay {
+  border-radius: 20px;
+}
+
+.customPdfScroll::-webkit-scrollbar {
+  width: 7px!important;
+  height: 5px;
+}
+.customPdfScroll::-webkit-scrollbar-track{
+  background: #00256f;
+}
+.customPdfScroll::-webkit-scrollbar-thumb{
+  background: #f4ce2c;
+}
+.customPdfScroll::-moz-scrollbar {
+  width: 10px;
+  scrollbar-width: thin;
+}
+.customPdfScroll::-moz-scrollbar-track{
+  background: #00256f;
+}
+.customPdfScroll::-moz-scrollbar-thumb {
+  background: #f4ce2c;
 }
